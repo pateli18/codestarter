@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from packaging.specifiers import SpecifierSet
 
-logger = logging.getLogger("firestarter")
+logger = logging.getLogger("codestarter")
 
 
 def _parse_dependency(dependency: str) -> tuple[str, SpecifierSet]:

@@ -16,7 +16,7 @@ from .dependency_resolvers import (
 from .file import CopyStatus, FileType, ReplaceConfig, get_file_client
 from .utils import OpsSemaphore
 
-logger = logging.getLogger("firestarter")
+logger = logging.getLogger("codestarter")
 
 dependency_file_locks: dict[DependencyKey, asyncio.Lock] = {}
 file_locks_lock = asyncio.Lock()
@@ -195,7 +195,7 @@ class ResourceConfig(BaseModel):
         return status_counter
 
 
-class FireStarterConfig(BaseModel):
+class CodeStarterConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
     auto_overwrite: bool = False
     global_variables: dict[str, str] = Field(default_factory=dict)
@@ -254,8 +254,8 @@ class FireStarterConfig(BaseModel):
         return status_counter
 
 
-async def execute_firestarter(
-    config: FireStarterConfig, skip_commands: bool
+async def execute_codestarter(
+    config: CodeStarterConfig, skip_commands: bool
 ) -> tuple[StatusCounter, list[tuple[str, int]], StatusCounter]:
     # process all files
     coros = [

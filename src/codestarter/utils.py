@@ -3,10 +3,10 @@ import asyncio
 from pydantic_settings import BaseSettings
 
 
-class FireStarterSettings(BaseSettings):
+class CodeStarterSettings(BaseSettings):
     max_concurrent_ops: int = 100
 
 
-settings = FireStarterSettings()
+settings = CodeStarterSettings()
 
 OpsSemaphore = asyncio.Semaphore(settings.max_concurrent_ops)

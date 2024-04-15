@@ -1,6 +1,6 @@
-# FireStarter
+# CodeStarter
 
-FireStarter is a tool for assembling a repo using copy/paste. Inspired by the installation of components with [shadcn/ui](https://ui.shadcn.com/), FireStarter allows you to easily bring in code and alter it without having to worry about assembling internal packages.
+CodeStarter is a tool for assembling a repo using copy/paste. Inspired by the installation of components with [shadcn/ui](https://ui.shadcn.com/), CodeStarter allows you to easily bring in code and alter it without having to worry about assembling internal packages.
 
 ![Run](./images/run.gif)
 
@@ -14,7 +14,7 @@ FireStarter is a tool for assembling a repo using copy/paste. Inspired by the in
 ### Installation
 
 ```bash
-pip install firestarter[cli,local,pythondep]
+pip install codestarter[cli,local,pythondep]
 ```
 
 - `cli`: Install the CLI
@@ -23,13 +23,13 @@ pip install firestarter[cli,local,pythondep]
 
 ### Create a Config
 
-Add a firestarter.json config to your project (we recommend the root of your project, but you can technically put it anywhere).
+Add a `codestarter.json` config to your project (we recommend the root of your project, but you can technically put it anywhere).
 
 ```json
 {
   "auto_overwrite": false, // If true, the output file will be overwritten if it already exists. If false, the system will not overwrite the existing file. This can be overridden by the auto_overwrite flag in the resource_configs. Default is Fa
   "global_variables": {
-    "$new_project_name": "firestarter" // global variables can be referenced within the resource_configs. The key must start with $.
+    "$new_project_name": "codestarter" // global variables can be referenced within the resource_configs. The key must start with $.
   },
   "dependency_configs": {
     "requirements_config": {
@@ -63,26 +63,26 @@ Add a firestarter.json config to your project (we recommend the root of your pro
 
 ### Run
 
-Run the following command to assemble your repo. If you don't provide any options, the command assumes that there is a `firestarter.json` in the current directory. See `firestarter --help` for more options.
+Run the following command to assemble your repo. If you don't provide any options, the command assumes that there is a `codestarter.json` in the current directory. See `codestarter --help` for more options.
 
 ```bash
-firestarter
+codestarter
 ```
 
 ## Extensions
 
 ### File
 
-FireStarter provides a file extension that allows you to read and store your files in the storage provider of your choice. Currently only `local` is supported. You can add other file config types by:
+CodeStarter provides a file extension that allows you to read and store your files in the storage provider of your choice. Currently only `local` is supported. You can add other file config types by:
 
-1. Adding a item to the [FlieClientType](./src/firestarter/file/utils.py#L126) class.
-1. Adding a new class that inherits from [FileClient](./src/firestarter/file/utils.py#L45). See [local.py](./src/firestarter/file/local.py) for an example.
-1. Updating `_determine_file_client_from_path` and `get_file_client` in [\_\_init\_\_.py](./src/firestarter/file/__init__.py).
+1. Adding a item to the [FlieClientType](./src/codestarter/file/utils.py#L126) class.
+1. Adding a new class that inherits from [FileClient](./src/codestarter/file/utils.py#L45). See [local.py](./src/codestarter/file/local.py) for an example.
+1. Updating `_determine_file_client_from_path` and `get_file_client` in [\_\_init\_\_.py](./src/codestarter/file/__init__.py).
 
 ### Dependency Resolvers
 
-FireStarter provides a dependency resolver extension that allows you to update dependencies in the dependency file of your choice. Currently only `requirements_resolver` (for python requirements.txt files) is supported. You can add other dependency resolvers by:
+CodeStarter provides a dependency resolver extension that allows you to update dependencies in the dependency file of your choice. Currently only `requirements_resolver` (for python requirements.txt files) is supported. You can add other dependency resolvers by:
 
-1. Adding a item to the [DependencyType](./src/firestarter/dependency_resolvers/utils.py#L9) class.
-1. Adding a new file with a `resolver` function that has the following signature `def resolver(new_dependencies: list[str], dependency_file: str) -> tuple[str, int]:`. See [requirements_resolver.py](./src/firestarter/dependency_resolvers/requirements_resolver.py#L22) for an example.
-1. Updating `resolve_dependencies` in [\_\_init\_\_.py](./src/firestarter/dependency_resolvers/__init__.py).
+1. Adding a item to the [DependencyType](./src/codestarter/dependency_resolvers/utils.py#L9) class.
+1. Adding a new file with a `resolver` function that has the following signature `def resolver(new_dependencies: list[str], dependency_file: str) -> tuple[str, int]:`. See [requirements_resolver.py](./src/codestarter/dependency_resolvers/requirements_resolver.py#L22) for an example.
+1. Updating `resolve_dependencies` in [\_\_init\_\_.py](./src/codestarter/dependency_resolvers/__init__.py).

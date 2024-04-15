@@ -5,7 +5,7 @@ from typing import Annotated
 import typer
 from rich import print
 
-from .executor import FireStarterConfig, execute_firestarter
+from .executor import CodeStarterConfig, execute_codestarter
 from .file import get_file_client
 
 app = typer.Typer(no_args_is_help=True)
@@ -14,8 +14,8 @@ app = typer.Typer(no_args_is_help=True)
 @app.command()
 def run(
     file: Annotated[
-        str, typer.Option(help="path to firestarter.json file")
-    ] = "./firestarter.json",
+        str, typer.Option(help="path to codestarter.json file")
+    ] = "./codestarter.json",
     skip_commands: Annotated[
         bool, typer.Option(help="don't run commands")
     ] = False,
@@ -23,11 +23,11 @@ def run(
     file_client = get_file_client(file)
     file_str = asyncio.run(file_client.load_file_str(file))
     file_config_raw = json.loads(file_str)
-    file_config = FireStarterConfig(**file_config_raw)
-    print(":fire: firestarter starting :fire:")
+    file_config = CodeStarterConfig(**file_config_raw)
+    print(":rocket: codestarter starting :rocket:")
     copy_status_counter, dependencies_updated, command_status_counter = (
         asyncio.run(
-            execute_firestarter(file_config, skip_commands=skip_commands)
+            execute_codestarter(file_config, skip_commands=skip_commands)
         )
     )
     dependencies_updated = ", ".join(
@@ -40,7 +40,7 @@ def run(
     if dependencies_updated:
         print(f"Dependencies Updated: {dependencies_updated}")
     print(f"Command Status: {command_status_counter}")
-    print(":fire: firestarter finished :fire:")
+    print(":rocket: codestarter finished :rocket:")
 
 
 if __name__ == "__main__":

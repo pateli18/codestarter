@@ -1,10 +1,10 @@
 [project]
-name = "firestarter"
+name = "codestarter"
 version = "0.0.0"
 authors = [
   { name="Ihsaan Patel" },
 ]
-description = "A package for copying files from other projects into a new project."
+description = "A tool for assembling a repo using copy/paste"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
@@ -23,11 +23,11 @@ local = ["aiofiles"]
 pythondep = ["packaging"]
 
 [project.scripts]
-firestarter = "firestarter.cli:app"
+codestarter = "codestarter.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/pateli18/firestarter"
-Issues = "https://github.com/pateli18/firestarter/issues"
+Homepage = "https://github.com/pateli18/codestarter"
+Issues = "https://github.com/pateli18/codestarter/issues"
 
 
 [build-system]

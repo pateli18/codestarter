@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from ..utils import OpsSemaphore
 
-logger = logging.getLogger("firestarter")
+logger = logging.getLogger("codestarter")
 
 
 class CopyStatus(str, Enum):
