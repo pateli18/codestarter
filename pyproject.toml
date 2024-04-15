@@ -1,0 +1,38 @@
+[project]
+name = "firestarter"
+version = "0.0.0"
+authors = [
+  { name="Ihsaan Patel" },
+]
+description = "A package for copying files from other projects into a new project."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "pydantic",
+  "pydantic-settings",
+]
+
+[project.optional-dependencies]
+cli = ["typer"]
+local = ["aiofiles"]
+pythondep = ["packaging"]
+
+[project.scripts]
+firestarter = "firestarter.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/pateli18/firestarter"
+Issues = "https://github.com/pateli18/firestarter/issues"
+
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
