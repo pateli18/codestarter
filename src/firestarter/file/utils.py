@@ -1,5 +1,4 @@
 import logging
-import re
 from abc import abstractmethod
 from enum import Enum
 
@@ -19,7 +18,6 @@ class CopyStatus(str, Enum):
 class ReplaceConfig(BaseModel):
     original_value: str
     new_value: str
-    match_casing: bool = False
 
     def resolve(self, global_variables: dict[str, str]) -> "ReplaceConfig":
         return ReplaceConfig(
@@ -33,7 +31,6 @@ class ReplaceConfig(BaseModel):
                 if self.new_value.startswith("$")
                 else self.new_value
             ),
-            match_casing=self.match_casing,
         )
 
 
@@ -97,29 +94,9 @@ class FileClient:
         raise NotImplementedError()
 
     def replace_value(self, doc: str, replace_config: ReplaceConfig) -> str:
-        if replace_config.match_casing:
-
-            def replace(match):
-                current = match.group()
-                if current.xislower():
-                    return replace_config.new_value.lower()
-                elif current.isupper():
-                    return replace_config.new_value.upper()
-                elif current.istitle():
-                    return replace_config.new_value.title()
-                else:
-                    return replace_config.new_value
-
-            replaced_doc = re.sub(
-                re.escape(replace_config.original_value),
-                replace,
-                doc,
-                flags=re.IGNORECASE if replace_config.match_casing else 0,
-            )
-        else:
-            replaced_doc = doc.replace(
-                replace_config.original_value, replace_config.new_value
-            )
+        replaced_doc = doc.replace(
+            replace_config.original_value, replace_config.new_value
+        )
         return replaced_doc
 
 
