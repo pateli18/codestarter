@@ -1,6 +1,13 @@
 # FireStarter
 
-FireStarter is a tool for assembling a repo using copy / paste. Inspired by the installation of components with [shadcn/ui](https://ui.shadcn.com/), FireStarter allows you to bring in easily bring in code and alter it without having to worry about assembling internal packages.
+FireStarter is a tool for assembling a repo using copy/paste. Inspired by the installation of components with [shadcn/ui](https://ui.shadcn.com/), FireStarter allows you to easily bring in code and alter it without having to worry about assembling internal packages.
+
+![Run](./images/run.gif)
+
+## Contents
+
+- [Quickstart](#quickstart)
+- [Extensions](#extensions)
 
 ## Quickstart
 
@@ -16,7 +23,51 @@ pip install firestarter[cli,local,pythondep]
 
 ### Create a Config
 
+Add a firestarter.json config to your project (we recommend the root of your project, but you can technically put it anywhere).
+
+```json
+{
+  "auto_overwrite": false, // If true, the output file will be overwritten if it already exists. If false, the system will not overwrite the existing file. This can be overridden by the auto_overwrite flag in the resource_configs. Default is Fa
+  "global_variables": {
+    "$new_project_name": "firestarter" // global variables can be referenced within the resource_configs. The key must start with $.
+  },
+  "dependency_configs": {
+    "requirements_config": {
+      // The key is the name of the dependency config that will be referenced in the resource_configs.
+      "type": "requirements.txt", // The type of the dependency resolver.
+      "output_file": "./requirements.txt" // The actual path to the file that contains the dependency
+    }
+  },
+  "resource_configs": [
+    {
+      "input_path": "../old_repo/.vscode/", // path to the file or directory that will be copied. if it's a directory, the entire directory will be copied.
+      "output_path": "./.vscode/", // path to the file or directory that the input will be copied to. If it's a directory, the input filenames will be used
+      "replace_configs": [
+        {
+          "original_value": "old_repo", // the value to be replaced within the file, can reference global variables.
+          "new_value": "$new_project_name" // the value to replace the original value with, can reference global variables.
+        }
+      ],
+      "dependencies": { "requirements_config": ["pandas>=1.0", "httpx"] }, // The dependencies to be installed. The key is the name of the dependency config that will be referenced in the resource_configs.
+      "auto_overwrite": false // [OPTIONAL] If true, the output file will be overwritten if it already exists. If false, the system will prompt or skip the overwrite. If not provided, the value of "auto_overwrite" at the top level will be used.
+    }
+  ],
+  "commands": [
+    {
+      "command": "uv venv", // The command to run.
+      "not_run_check": "[[ -d .venv ]] && exit 1 || exit 0" // The command to run to check if the command should be run. If the command returns 0, the command will be run. If the command returns any other value, the command will not be run.
+    }
+  ]
+}
+```
+
 ### Run
+
+Run the following command to assemble your repo. If you don't provide any options, the command assumes that there is a `firestarter.json` in the current directory. See `firestarter --help` for more options.
+
+```bash
+firestarter
+```
 
 ## Extensions
 
