@@ -8,8 +8,6 @@ DependencyValue = str
 
 class DependencyType(str, Enum):
     requirements = "requirements.txt"
-    pyproject = "pyproject.toml"
-    package = "package.json"
 
 
 class DependencyConfig(BaseModel):

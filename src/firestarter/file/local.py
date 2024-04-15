@@ -3,7 +3,7 @@ import os
 
 import aiofiles
 
-from .file_utils import FileClient, FileType
+from .utils import FileClient, FileType
 
 logger = logging.getLogger(__name__)
 

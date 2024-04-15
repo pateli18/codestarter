@@ -14,7 +14,7 @@ def resolve_dependencies(
     if dependency_group.type == DependencyType.requirements:
         from .requirements_resolver import resolver
 
-        new_file, packages_updated = resolver(
+        new_file, depedencies_updated = resolver(
             dependency_group.dependency_values, file_str
         )
     else:
@@ -22,7 +22,7 @@ def resolve_dependencies(
             f"Unknown dependency resolver type {dependency_group.type}"
         )
 
-    return new_file, packages_updated
+    return new_file, depedencies_updated
 
 
 __all__ = [
