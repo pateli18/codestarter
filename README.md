@@ -27,10 +27,18 @@ Add a `codestarter.json` config to your project (we recommend the root of your p
 
 ```json
 {
-  "auto_overwrite": false, // If true, the output file will be overwritten if it already exists. If false, the system will not overwrite the existing file. This can be overridden by the auto_overwrite flag in the resource_configs. Default is Fa
+  "auto_overwrite": false, // If true, the output file will be overwritten if it already exists. If false, the system will not overwrite the existing file. This can be overridden by the auto_overwrite flag in the resource_configs. Default is False
+  "maintain_directory_structure": true, // If true, the directory structure from the input path will be maintained. If false, the directory structure will be flattened and only the filenames will be used. Default is True
   "global_variables": {
     "$new_project_name": "codestarter" // global variables can be referenced within the resource_configs. The key must start with $.
   },
+  "global_replace_configs": [
+    // global replace configs will be run for every resource after the resource_configs.
+    {
+      "original_value": "old_repo", // the value to be replaced within the file, can reference global variables.
+      "new_value": "$new_project_name" // the value to replace the original value with, can reference global variables.
+    }
+  ],
   "dependency_configs": {
     "requirements_config": {
       // The key is the name of the dependency config that will be referenced in the resource_configs.
@@ -42,6 +50,8 @@ Add a `codestarter.json` config to your project (we recommend the root of your p
     {
       "input_path": "../old_repo/.vscode/", // path to the file or directory that will be copied. if it's a directory, the entire directory will be copied.
       "output_path": "./.vscode/", // path to the file or directory that the input will be copied to. If it's a directory, the input filenames will be used
+      "include_patterns": ["*.py"], // [OPTIONAL] The file patterns to include. If not provided, all files will be included.
+      "exclude_patterns": ["*.pyc"], // [OPTIONAL] The file patterns to exclude. If not provided, no files will be excluded.
       "replace_configs": [
         {
           "original_value": "old_repo", // the value to be replaced within the file, can reference global variables.
@@ -49,7 +59,8 @@ Add a `codestarter.json` config to your project (we recommend the root of your p
         }
       ],
       "dependencies": { "requirements_config": ["pandas>=1.0", "httpx"] }, // The dependencies to be installed. The key is the name of the dependency config that will be referenced in the resource_configs.
-      "auto_overwrite": false // [OPTIONAL] If true, the output file will be overwritten if it already exists. If false, the system will prompt or skip the overwrite. If not provided, the value of "auto_overwrite" at the top level will be used.
+      "auto_overwrite": false, // [OPTIONAL] If true, the output file will be overwritten if it already exists. If false, the system will prompt or skip the overwrite. If not provided, the value of "auto_overwrite" at the top level will be used.
+      "maintain_directory_structure": false // [OPTIONAL] If true, the directory structure from the input path will be maintained. If false, the directory structure will be flattened and only the filenames will be used. If not provided, the value of "maintain_directory_structure" at the top level will be used.
     }
   ],
   "commands": [

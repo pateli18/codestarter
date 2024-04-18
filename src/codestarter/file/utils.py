@@ -53,7 +53,12 @@ class FileClient:
         raise NotImplementedError()
 
     @abstractmethod
-    async def get_all_files(self, directory: str) -> list[str]:
+    async def get_all_files(
+        self,
+        directory: str,
+        include_patterns: list[str],
+        exclude_patterns: list[str],
+    ) -> list[str]:
         raise NotImplementedError()
 
     async def copy_file(

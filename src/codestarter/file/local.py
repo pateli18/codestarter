@@ -1,5 +1,6 @@
 import logging
 import os
+from fnmatch import fnmatch
 
 import aiofiles
 
@@ -29,11 +30,25 @@ class LocalFileClient(FileClient):
         else:
             raise FileNotFoundError(f"No file or directory found at {path}")
 
-    async def get_all_files(self, directory: str) -> list[str]:
+    async def get_all_files(
+        self,
+        directory: str,
+        include_patterns: list[str],
+        exclude_patterns: list[str],
+    ) -> list[str]:
         all_files = []
         for root, _, files in os.walk(directory):
             for file in files:
-                all_files.append(os.path.join(root, file))
+                full_path = os.path.join(root, file)
+                if any(
+                    fnmatch(full_path, pattern) for pattern in exclude_patterns
+                ):
+                    continue
+                if len(include_patterns) > 0 and not any(
+                    fnmatch(full_path, pattern) for pattern in include_patterns
+                ):
+                    continue
+                all_files.append(full_path)
         return all_files
 
     async def file_exists(self, path: str) -> bool:

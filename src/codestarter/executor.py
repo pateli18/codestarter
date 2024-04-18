@@ -70,13 +70,17 @@ class ResourceSettings(BaseModel):
 
 
 class ResourceConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     input_path: str
     dependencies: dict[DependencyKey, list[DependencyValue]] = Field(
         default_factory=dict
     )
     replace_configs: list[ReplaceConfig] = Field(default_factory=list)
     output_path: str
+    exclude_patterns: list[str] = Field(default_factory=list)
+    include_patterns: list[str] = Field(default_factory=list)
     auto_overwrite: Optional[bool] = None
+    maintain_directory_structure: Optional[bool] = None
 
     def resolve_settings(self, auto_overwrite: bool) -> ResourceSettings:
         return ResourceSettings(
@@ -90,14 +94,22 @@ class ResourceConfig(BaseModel):
     def _get_output_path(
         self,
         input_file_path: str,
+        input_base_path: str,
         input_file_type: FileType,
         output_file_path: str,
         output_file_type: FileType,
+        maintain_directory_structure: bool,
     ) -> str:
         if input_file_type == FileType.directory:
             assert output_file_type == FileType.directory
-            input_filename = input_file_path.split("/")[-1]
-            return os.path.join(output_file_path, input_filename)
+            if maintain_directory_structure:
+                relative_path = os.path.relpath(
+                    input_file_path, input_base_path
+                )
+                return os.path.join(output_file_path, relative_path)
+            else:
+                input_filename = input_file_path.split("/")[-1]
+                return os.path.join(output_file_path, input_filename)
         elif input_file_type == FileType.file:
             if output_file_type == FileType.directory:
                 input_filename = input_file_path.split("/")[-1]
@@ -142,7 +154,9 @@ class ResourceConfig(BaseModel):
     async def process_resource(
         self,
         global_auto_overwrite: bool,
+        global_maintain_directory_structure: bool,
         global_variables: dict[str, str],
+        global_replace_configs: list[ReplaceConfig],
     ) -> StatusCounter:
         status_counter = StatusCounter()
         file_client = get_file_client(self.input_path)
@@ -155,11 +169,17 @@ class ResourceConfig(BaseModel):
             return status_counter
 
         output_file_type = self._determine_output_file_type(
-            self.input_path, input_file_type, self.output_path
+            self.input_path,
+            input_file_type,
+            self.output_path,
         )
 
         if input_file_type == FileType.directory:
-            files = await file_client.get_all_files(self.input_path)
+            files = await file_client.get_all_files(
+                self.input_path,
+                self.include_patterns,
+                self.exclude_patterns,
+            )
         else:
             files = [self.input_path]
 
@@ -167,14 +187,24 @@ class ResourceConfig(BaseModel):
             auto_overwrite=global_auto_overwrite
         )
         replace_configs_to_use = [
-            config.resolve(global_variables) for config in self.replace_configs
+            config.resolve(global_variables)
+            for config in [*self.replace_configs, *global_replace_configs]
         ]
 
         file_to_process: list[tuple[str, str]] = [
             (
                 file,
                 self._get_output_path(
-                    file, input_file_type, self.output_path, output_file_type
+                    file,
+                    self.input_path,
+                    input_file_type,
+                    self.output_path,
+                    output_file_type,
+                    (
+                        self.maintain_directory_structure
+                        if self.maintain_directory_structure is not None
+                        else global_maintain_directory_structure
+                    ),
                 ),
             )
             for file in files
@@ -198,7 +228,9 @@ class ResourceConfig(BaseModel):
 class CodeStarterConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
     auto_overwrite: bool = False
+    maintain_directory_structure: bool = True
     global_variables: dict[str, str] = Field(default_factory=dict)
+    global_replace_configs: list[ReplaceConfig] = Field(default_factory=list)
     dependency_configs: DependencyConfigs = Field(
         default_factory=DependencyConfigs
     )
@@ -260,7 +292,10 @@ async def execute_codestarter(
     # process all files
     coros = [
         resource_config.process_resource(
-            config.auto_overwrite, config.global_variables
+            config.auto_overwrite,
+            config.maintain_directory_structure,
+            config.global_variables,
+            config.global_replace_configs,
         )
         for resource_config in config.resource_configs
     ]
